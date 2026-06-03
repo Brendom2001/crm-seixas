@@ -1,5 +1,4 @@
 import { useMemo } from 'react'
-import { useDraggable, useDroppable } from '@dnd-kit/core'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
@@ -65,11 +64,8 @@ export default function MobileKanbanView({ leads, selectedStatus, onStatusChange
 }
 
 function MobileCard({ lead, onEdit }) {
-  const { setNodeRef } = useDroppable({ id: lead.id })
-
   return (
     <div
-      ref={setNodeRef}
       onClick={() => onEdit(lead)}
       className="mx-3 p-3.5 bg-[#0e0e0e] border border-[#181818] rounded-xl cursor-pointer hover:bg-[#131313] active:bg-[#141414] transition-colors animate-fade-up"
     >

@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(npx --yes playwright --version)",
+      "Bash(node -e ' *)",
+      "Bash(npm list *)",
+      "Bash(npx playwright@1.60.0 --version)",
+      "Read(//c/tmp/**)",
+      "Bash(npm init *)",
+      "Bash(npm install *)",
+      "Bash(npx playwright *)",
+      "Bash(node test-mobile.js)",
+      "Bash(mv \"c:\\\\Users\\\\Pichau\\\\seixas-crm\\\\test-mobile.js\" \"c:\\\\Users\\\\Pichau\\\\seixas-crm\\\\test-mobile.cjs\")",
+      "Bash(node test-mobile.cjs)"
+    ]
+  }
+}

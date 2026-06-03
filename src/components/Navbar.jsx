@@ -11,6 +11,15 @@ const STATUS_COLOR = {
   'Perdido': '#ef4444',
 }
 
+const STATUS_SHORT = {
+  'Novo': 'Novo',
+  'Contato feito': 'Contato',
+  'Proposta enviada': 'Proposta',
+  'Negociando': 'Negocian.',
+  'Fechado': 'Fechado',
+  'Perdido': 'Perdido',
+}
+
 export default function Navbar({ session, mobileStatusCount = {}, selectedStatus = null, onStatusChange = null }) {
   const email = session?.user?.email || ''
   const initials = email.slice(0, 2).toUpperCase()
@@ -37,35 +46,42 @@ export default function Navbar({ session, mobileStatusCount = {}, selectedStatus
 
       {/* Mobile bottom status bar */}
       {selectedStatus !== null && onStatusChange && (
-        <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0d0d0d] border-t border-[#181818] flex items-center overflow-x-auto scrollbar-hide">
-          {STATUSES.map(status => {
-            const count = mobileStatusCount[status] || 0
-            const isActive = selectedStatus === status
-            return (
-              <button
-                key={status}
-                onClick={() => onStatusChange(status)}
-                className={`flex-shrink-0 px-3 py-3 h-16 flex flex-col items-center justify-center gap-1 border-b-2 transition-all text-center ${
-                  isActive
-                    ? 'border-[#f97316]'
-                    : 'border-transparent'
-                }`}
-              >
-                <span
-                  className="text-[10px] font-mono font-bold"
-                  style={{ color: isActive ? '#f97316' : '#666' }}
+        <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0d0d0d] border-t border-[#181818]">
+          <div className="flex overflow-x-auto scrollbar-hide">
+            {STATUSES.map(status => {
+              const count = mobileStatusCount[status] || 0
+              const isActive = selectedStatus === status
+              const color = STATUS_COLOR[status]
+              return (
+                <button
+                  key={status}
+                  onClick={() => onStatusChange(status)}
+                  className={`flex-1 min-w-[58px] h-14 flex flex-col items-center justify-center gap-0.5 border-t-2 transition-all ${
+                    isActive ? 'border-[#f97316] bg-[#f97316]/[0.04]' : 'border-transparent'
+                  }`}
                 >
-                  {status.split(' ').slice(0, 2).join(' ')}
-                </span>
-                <span
-                  className="text-xs font-mono font-bold min-w-[16px]"
-                  style={{ color: isActive ? '#f97316' : STATUS_COLOR[status] }}
-                >
-                  {count}
-                </span>
-              </button>
-            )
-          })}
+                  <div className="flex items-center gap-1">
+                    <span
+                      className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: color }}
+                    />
+                    <span
+                      className="text-[9px] font-mono font-semibold whitespace-nowrap"
+                      style={{ color: isActive ? '#f97316' : '#666' }}
+                    >
+                      {STATUS_SHORT[status]}
+                    </span>
+                  </div>
+                  <span
+                    className="text-[11px] font-mono font-bold leading-none"
+                    style={{ color: isActive ? '#f97316' : '#444' }}
+                  >
+                    {count}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
         </nav>
       )}
 

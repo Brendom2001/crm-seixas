@@ -232,7 +232,7 @@ export default function Dashboard({ session }) {
           <div className="lg:hidden mb-4">
             <div className="flex items-center justify-between gap-2 mb-4">
               <div>
-                <p className="text-[#888] text-xs font-mono">{mobileStatusCount[mobileSelectedStatus]} lead(s)</p>
+                <p className="text-[#888] text-xs font-mono">{mobileStatusCount[mobileSelectedStatus]} {mobileStatusCount[mobileSelectedStatus] === 1 ? 'lead' : 'leads'}</p>
               </div>
               <button
                 onClick={openCreate}

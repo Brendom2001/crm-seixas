@@ -43,6 +43,7 @@ export default function KanbanCard({ lead, onEdit, onDelete, accentColor }) {
   const initials = getInitials(lead.nome)
   const avatarColor = getAvatarColor(lead.nome)
 
+  return (
     <div
       ref={setNodeRef}
       style={style}
