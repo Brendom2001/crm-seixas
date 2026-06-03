@@ -1,0 +1,256 @@
+import { useState, useEffect } from 'react'
+import { supabase } from '../lib/supabaseClient'
+import Navbar from '../components/Navbar'
+import DashboardMetrics from '../components/DashboardMetrics'
+import KanbanBoard from '../components/KanbanBoard'
+import LeadTable from '../components/LeadTable'
+import LeadModal from '../components/LeadModal'
+import Toast from '../components/Toast'
+
+export default function Dashboard({ session }) {
+  const [leads, setLeads] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [view, setView] = useState('kanban')
+  const [modalOpen, setModalOpen] = useState(false)
+  const [editingLead, setEditingLead] = useState(null)
+  const [filterStatus, setFilterStatus] = useState('')
+  const [filterTipo, setFilterTipo] = useState('')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [toast, setToast] = useState(null)
+  const [scrollProgress, setScrollProgress] = useState(0)
+
+  useEffect(() => {
+    fetchLeads()
+
+    function onScroll() {
+      const current = window.scrollY
+      const height = document.documentElement.scrollHeight - window.innerHeight
+      setScrollProgress(height > 0 ? Math.min(100, Math.max(0, (current / height) * 100)) : 0)
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  async function fetchLeads() {
+    const { data, error } = await supabase
+      .from('leads')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    console.log('SUPABASE ERROR:', JSON.stringify(error))
+    console.log('SUPABASE DATA:', data)
+
+    if (!error) setLeads(data || [])
+    setLoading(false)
+  }
+
+  function openCreate() {
+    setEditingLead(null)
+    setModalOpen(true)
+  }
+
+  function openEdit(lead) {
+    setEditingLead(lead)
+    setModalOpen(true)
+  }
+
+  function closeModal() {
+    setModalOpen(false)
+    setEditingLead(null)
+  }
+
+  async function handleSave(formData) {
+    if (editingLead) {
+      const { error } = await supabase
+        .from('leads')
+        .update(formData)
+        .eq('id', editingLead.id)
+
+      if (!error) {
+        setLeads(leads.map(l => l.id === editingLead.id ? { ...l, ...formData } : l))
+        setToast({ message: 'Lead atualizado com sucesso', type: 'success' })
+      } else {
+        setToast({ message: 'Erro ao atualizar lead', type: 'error' })
+      }
+    } else {
+      let userId = session?.user?.id
+      if (!userId) {
+        const { data: { user }, error: authError } = await supabase.auth.getUser()
+        if (authError || !user) {
+          console.error('Não foi possível obter o usuário logado:', authError)
+          return
+        }
+        userId = user.id
+      }
+
+      const { data, error } = await supabase
+        .from('leads')
+        .insert({ ...formData, user_id: userId })
+        .select()
+        .single()
+
+      console.log('SUPABASE INSERT ERROR:', JSON.stringify(error))
+      console.log('SUPABASE INSERT DATA:', data)
+
+      if (!error) {
+        setLeads([data, ...leads])
+        setToast({ message: 'Lead criado com sucesso', type: 'success' })
+      } else {
+        setToast({ message: 'Erro ao criar lead', type: 'error' })
+      }
+    }
+    closeModal()
+  }
+
+  async function handleDelete(id) {
+    const { error } = await supabase.from('leads').delete().eq('id', id)
+    console.log('SUPABASE DELETE ERROR:', JSON.stringify(error))
+    if (!error) {
+      setLeads(leads.filter(l => l.id !== id))
+      setToast({ message: 'Lead deletado com sucesso', type: 'success' })
+    } else {
+      setToast({ message: 'Falha ao deletar lead', type: 'error' })
+    }
+  }
+
+  async function handleStatusChange(leadId, newStatus) {
+    let previousLeads
+    setLeads(currentLeads => {
+      previousLeads = currentLeads
+      return currentLeads.map(l => l.id === leadId ? { ...l, status: newStatus } : l)
+    })
+
+    const { error } = await supabase
+      .from('leads')
+      .update({ status: newStatus })
+      .eq('id', leadId)
+
+    console.log('SUPABASE STATUS UPDATE ERROR:', JSON.stringify(error))
+
+    if (error) {
+      setLeads(previousLeads)
+    }
+  }
+
+  const kanbanLeads = leads.filter(lead =>
+    lead.nome.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
+  return (
+    <div className="flex min-h-screen bg-[#0a0a0a]">
+      <Navbar session={session} />
+
+      <main className="flex-1 lg:ml-60 pt-14 lg:pt-0 min-h-screen">
+        <div className="p-5 lg:p-8">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-7">
+            <div>
+              <h1 className="font-display text-2xl font-bold text-white">Pipeline de Leads</h1>
+              <p className="text-[#444] text-sm mt-0.5 font-mono">
+                {leads.length} lead{leads.length !== 1 ? 's' : ''} cadastrado{leads.length !== 1 ? 's' : ''}
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="flex bg-[#111] border border-[#1e1e1e] rounded-lg p-1 gap-0.5">
+                <button
+                  onClick={() => setView('kanban')}
+                  className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
+                    view === 'kanban'
+                      ? 'bg-[#f97316] text-white'
+                      : 'text-[#555] hover:text-[#888]'
+                  }`}
+                >
+                  Kanban
+                </button>
+                <button
+                  onClick={() => setView('tabela')}
+                  className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
+                    view === 'tabela'
+                      ? 'bg-[#f97316] text-white'
+                      : 'text-[#555] hover:text-[#888]'
+                  }`}
+                >
+                  Tabela
+                </button>
+              </div>
+
+              <button
+                onClick={openCreate}
+                className="flex items-center gap-2 bg-[#f97316] hover:bg-[#ea6c0a] active:bg-[#d96109] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M7 2v10M2 7h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+                Novo Lead
+              </button>
+            </div>
+          </div>
+
+          <DashboardMetrics leads={leads} />
+
+          <div className="relative mb-4 h-0.5 rounded-full bg-[#111] overflow-hidden">
+            <div
+              className="h-full rounded-full bg-[#f97316] transition-all duration-200 ease-out"
+              style={{ width: `${scrollProgress}%` }}
+            />
+          </div>
+
+          {view === 'kanban' && (
+            <div className="mt-4 flex flex-col sm:flex-row items-center gap-3">
+              <input
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                placeholder="Buscar lead por nome..."
+                className="w-full sm:max-w-md bg-[#111] border border-[#1e1e1e] rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-[#f97316] transition-colors"
+              />
+            </div>
+          )}
+
+          <div className="mt-7">
+            {loading ? (
+              <div className="flex items-center justify-center py-32">
+                <div className="w-8 h-8 border-2 border-[#f97316] border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : view === 'kanban' ? (
+              <KanbanBoard
+                leads={kanbanLeads}
+                onEdit={openEdit}
+                onDelete={handleDelete}
+                onStatusChange={handleStatusChange}
+              />
+            ) : (
+              <LeadTable
+                leads={leads}
+                onEdit={openEdit}
+                onDelete={handleDelete}
+                filterStatus={filterStatus}
+                setFilterStatus={setFilterStatus}
+                filterTipo={filterTipo}
+                setFilterTipo={setFilterTipo}
+              />
+            )}
+          </div>
+        </div>
+      </main>
+
+      {modalOpen && (
+        <LeadModal
+          lead={editingLead}
+          onSave={handleSave}
+          onClose={closeModal}
+          onDelete={handleDelete}
+        />
+      )}
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+    </div>
+  )
+}
