@@ -50,3 +50,12 @@ select option {
 .animate-fade-up {
   animation: fadeUp 320ms ease-out both;
 }
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

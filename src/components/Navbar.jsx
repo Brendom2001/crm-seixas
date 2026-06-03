@@ -1,6 +1,17 @@
 import { supabase } from '../lib/supabaseClient'
 
-export default function Navbar({ session }) {
+const STATUSES = ['Novo', 'Contato feito', 'Proposta enviada', 'Negociando', 'Fechado', 'Perdido']
+
+const STATUS_COLOR = {
+  'Novo': '#6366f1',
+  'Contato feito': '#3b82f6',
+  'Proposta enviada': '#f59e0b',
+  'Negociando': '#f97316',
+  'Fechado': '#22c55e',
+  'Perdido': '#ef4444',
+}
+
+export default function Navbar({ session, mobileStatusCount = {}, selectedStatus = null, onStatusChange = null }) {
   const email = session?.user?.email || ''
   const initials = email.slice(0, 2).toUpperCase()
 
@@ -23,6 +34,40 @@ export default function Navbar({ session }) {
           Sair
         </button>
       </header>
+
+      {/* Mobile bottom status bar */}
+      {selectedStatus !== null && onStatusChange && (
+        <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0d0d0d] border-t border-[#181818] flex items-center overflow-x-auto scrollbar-hide">
+          {STATUSES.map(status => {
+            const count = mobileStatusCount[status] || 0
+            const isActive = selectedStatus === status
+            return (
+              <button
+                key={status}
+                onClick={() => onStatusChange(status)}
+                className={`flex-shrink-0 px-3 py-3 h-16 flex flex-col items-center justify-center gap-1 border-b-2 transition-all text-center ${
+                  isActive
+                    ? 'border-[#f97316]'
+                    : 'border-transparent'
+                }`}
+              >
+                <span
+                  className="text-[10px] font-mono font-bold"
+                  style={{ color: isActive ? '#f97316' : '#666' }}
+                >
+                  {status.split(' ').slice(0, 2).join(' ')}
+                </span>
+                <span
+                  className="text-xs font-mono font-bold min-w-[16px]"
+                  style={{ color: isActive ? '#f97316' : STATUS_COLOR[status] }}
+                >
+                  {count}
+                </span>
+              </button>
+            )
+          })}
+        </nav>
+      )}
 
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-60 bg-[#0d0d0d] border-r border-[#181818] flex-col z-40">
