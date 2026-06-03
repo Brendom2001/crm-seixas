@@ -58,7 +58,7 @@ export default function LeadTable({
     return rows
   }, [leads, filterStatus, filterTipo, sortCol, sortDir])
 
-  const selectClass = 'bg-[#111] border border-[#1e1e1e] rounded-lg px-3 py-2 text-sm text-[#888] focus:outline-none focus:border-[#f97316] transition-colors'
+  const selectClass = 'bg-[#111] border border-[#1e1e1e] rounded-lg px-3 sm:px-3.5 py-2 sm:py-2.5 text-xs sm:text-sm text-[#888] focus:outline-none focus:border-[#f97316] transition-colors min-h-[44px] sm:min-h-auto'
   const thBase = 'px-4 py-3 text-left font-mono text-[10px] uppercase tracking-[0.15em] text-[#333] cursor-pointer hover:text-[#666] transition-colors select-none whitespace-nowrap'
   const tdBase = 'px-4 py-3 text-sm text-[#888] whitespace-nowrap'
 
@@ -70,27 +70,27 @@ export default function LeadTable({
   return (
     <div>
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-2 mb-4">
-        <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className={selectClass}>
+      <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2 mb-3 sm:mb-4">
+        <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className={selectClass + ' flex-1 sm:flex-none'}>
           <option value="">Todos os status</option>
           {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
         </select>
-        <select value={filterTipo} onChange={e => setFilterTipo(e.target.value)} className={selectClass}>
+        <select value={filterTipo} onChange={e => setFilterTipo(e.target.value)} className={selectClass + ' flex-1 sm:flex-none'}>
           <option value="">Todos os tipos</option>
           {TIPOS.map(t => <option key={t} value={t}>{t}</option>)}
         </select>
         {(filterStatus || filterTipo) && (
           <button
             onClick={() => { setFilterStatus(''); setFilterTipo('') }}
-            className="text-[#f97316] text-sm hover:text-[#ea6c0a] transition-colors font-mono text-xs"
+            className="text-[#f97316] text-sm hover:text-[#ea6c0a] transition-colors font-mono text-xs px-2 py-2 h-[44px] sm:h-auto"
           >
             × limpar
           </button>
         )}
       </div>
 
-      {/* Table */}
-      <div className="bg-[#0e0e0e] border border-[#181818] rounded-xl overflow-hidden">
+      {/* Table - hide on mobile, show cards instead */}
+      <div className="hidden sm:block bg-[#0e0e0e] border border-[#181818] rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -170,7 +170,60 @@ export default function LeadTable({
         </div>
       </div>
 
-      <p className="font-mono text-[10px] text-[#2a2a2a] mt-2 px-1">
+      {/* Mobile card view */}
+      <div className="sm:hidden space-y-3">
+        {filtered.length === 0 ? (
+          <div className="px-4 py-12 text-center text-[#2a2a2a] font-mono text-xs tracking-wider">
+            NENHUM LEAD ENCONTRADO
+          </div>
+        ) : (
+          filtered.map(lead => {
+            const ss = STATUS_STYLE[lead.status] ?? { bg: '#ffffff10', color: '#666' }
+            return (
+              <div
+                key={lead.id}
+                onClick={() => onEdit(lead)}
+                className="bg-[#0e0e0e] border border-[#181818] rounded-lg p-3 cursor-pointer hover:bg-[#131313] transition-colors"
+              >
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-medium text-sm line-clamp-1">{lead.nome}</p>
+                    <p className="text-[#888] text-xs mt-0.5">{lead.tipo_negocio || '—'}</p>
+                  </div>
+                  <button
+                    onClick={e => {
+                      e.stopPropagation()
+                      if (window.confirm(`Deletar lead "${lead.nome}"?`)) onDelete(lead.id)
+                    }}
+                    className="text-[#2a2a2a] hover:text-red-400 transition-all flex-shrink-0 p-1"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <path d="M1.5 3.5h11M4.5 3.5V2.5a1 1 0 011-1h3a1 1 0 011 1v1M5.5 6v4.5M8.5 6v4.5M2 3.5l.875 8.25a.875.875 0 00.875.875h6.5a.875.875 0 00.875-.875L12 3.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                </div>
+
+                <div className="flex flex-wrap gap-2 items-center text-xs mb-2">
+                  <span
+                    className="px-2 py-1 rounded-md font-mono font-medium"
+                    style={{ backgroundColor: ss.bg, color: ss.color }}
+                  >
+                    {lead.status}
+                  </span>
+                  <span className="text-[#888]">{lead.origem || '—'}</span>
+                  <span className="text-[#666] font-mono ml-auto">{format(new Date(lead.created_at), 'dd/MM', { locale: ptBR })}</span>
+                </div>
+
+                {formatBRL(lead.valor_estimado) !== '—' && (
+                  <p className="text-[#f97316] text-sm font-mono font-medium">{formatBRL(lead.valor_estimado)}</p>
+                )}
+              </div>
+            )
+          })
+        )}
+      </div>
+
+      <p className="font-mono text-[10px] text-[#2a2a2a] mt-2 sm:mt-3 px-1">
         {filtered.length} resultado{filtered.length !== 1 ? 's' : ''}
       </p>
     </div>

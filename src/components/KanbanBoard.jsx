@@ -45,15 +45,15 @@ function KanbanColumn({ status, leads, onEdit, onDelete }) {
   const total = leads.reduce((s, l) => s + (Number(l.valor_estimado) || 0), 0)
 
   return (
-    <div className="flex-shrink-0 w-[224px] xl:w-[252px]">
+    <div className="flex-shrink-0 w-[180px] sm:w-[224px] lg:w-[252px]">
       {/* Column header */}
       <div className="flex items-center justify-between mb-1.5 px-0.5">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 min-w-0">
           <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: meta.dot }} />
-          <span className="text-[#aaa] text-xs font-medium">{status}</span>
+          <span className="text-[#aaa] text-xs font-medium truncate">{status}</span>
         </div>
         <span
-          className="font-mono text-[10px] px-2 py-0.5 rounded-full font-medium"
+          className="font-mono text-[10px] px-2 py-0.5 rounded-full font-medium flex-shrink-0"
           style={{ backgroundColor: `${meta.color}15`, color: meta.dot }}
         >
           {leads.length}
@@ -61,13 +61,13 @@ function KanbanColumn({ status, leads, onEdit, onDelete }) {
       </div>
 
       {total > 0 && (
-        <p className="font-mono text-[10px] text-[#2e2e2e] mb-2 px-0.5">{formatBRL(total)}</p>
+        <p className="font-mono text-[10px] text-[#2e2e2e] mb-2 px-0.5 truncate">{formatBRL(total)}</p>
       )}
 
       {/* Drop zone */}
       <div
         ref={setNodeRef}
-        className={`min-h-[180px] rounded-xl border p-2 space-y-2 transition-colors duration-200 ease-out ${
+        className={`min-h-[160px] sm:min-h-[180px] rounded-lg sm:rounded-xl border p-2 space-y-2 transition-colors duration-200 ease-out ${
           isOver
             ? 'border-[#f97316]/30 bg-[#f97316]/[0.03]'
             : 'border-[#181818] bg-[#0c0c0c]'
@@ -84,7 +84,7 @@ function KanbanColumn({ status, leads, onEdit, onDelete }) {
         ))}
 
         {leads.length === 0 && !isOver && (
-          <div className="flex items-center justify-center h-14 text-[#222] text-[10px] font-mono tracking-wider">
+          <div className="flex items-center justify-center h-12 sm:h-14 text-[#222] text-[9px] sm:text-[10px] font-mono tracking-wider">
             VAZIO
           </div>
         )}

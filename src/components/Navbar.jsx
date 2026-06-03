@@ -11,14 +11,14 @@ export default function Navbar({ session }) {
   return (
     <>
       {/* Mobile top bar */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#0d0d0d] border-b border-[#181818] px-4 h-14 flex items-center justify-between">
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#0d0d0d] border-b border-[#181818] px-3 sm:px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <LogoMark size={28} />
-          <span className="font-display text-sm font-bold text-white tracking-tight">SEIXAS</span>
+          <span className="font-display text-xs sm:text-sm font-bold text-white tracking-tight">SEIXAS</span>
         </div>
         <button
           onClick={handleLogout}
-          className="font-mono text-[10px] uppercase tracking-widest text-[#444] hover:text-[#f97316] transition-colors"
+          className="font-mono text-[9px] sm:text-[10px] uppercase tracking-widest text-[#444] hover:text-[#f97316] transition-colors px-2 py-2"
         >
           Sair
         </button>

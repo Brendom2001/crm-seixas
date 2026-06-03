@@ -65,11 +65,11 @@ export default function LeadModal({ lead, onSave, onClose, onDelete }) {
     onClose()
   }
 
-  const inputClass = 'w-full bg-[#161616] border border-[#202020] rounded-lg px-3.5 py-2.5 text-white text-sm placeholder-[#2e2e2e] focus:outline-none focus:border-[#f97316] transition-colors'
-  const labelClass = 'block font-mono text-[9px] uppercase tracking-[0.2em] text-[#3a3a3a] mb-2'
+  const inputClass = 'w-full bg-[#161616] border border-[#202020] rounded-lg px-3 sm:px-3.5 py-2 sm:py-2.5 text-sm text-white placeholder-[#2e2e2e] focus:outline-none focus:border-[#f97316] transition-colors min-h-[44px]'
+  const labelClass = 'block font-mono text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-[#3a3a3a] mb-2'
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/70 backdrop-blur-[2px]"
@@ -79,7 +79,7 @@ export default function LeadModal({ lead, onSave, onClose, onDelete }) {
       {/* Modal */}
       <div
         ref={drawerRef}
-        className="relative w-full max-w-[520px] max-h-[90vh] overflow-hidden bg-[#0f0f0f] border border-[#1a1a1a] flex flex-col rounded-lg shadow-2xl"
+        className="relative w-full max-w-[520px] max-h-[calc(100vh-1rem)] sm:max-h-[90vh] overflow-hidden bg-[#0f0f0f] border border-[#1a1a1a] flex flex-col rounded-lg sm:rounded-xl shadow-2xl"
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-[#1a1a1a] flex-shrink-0">
@@ -104,8 +104,8 @@ export default function LeadModal({ lead, onSave, onClose, onDelete }) {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-5 space-y-3 sm:space-y-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className={labelClass}>Nome *</label>
               <input
@@ -130,7 +130,7 @@ export default function LeadModal({ lead, onSave, onClose, onDelete }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className={labelClass}>Tipo de Negócio</label>
               <select name="tipo_negocio" value={form.tipo_negocio} onChange={handleChange} className={inputClass}>
@@ -145,7 +145,7 @@ export default function LeadModal({ lead, onSave, onClose, onDelete }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-end">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className={labelClass}>Status</label>
               <div className="grid grid-cols-2 gap-2">
@@ -200,18 +200,18 @@ export default function LeadModal({ lead, onSave, onClose, onDelete }) {
               name="notas"
               value={form.notas}
               onChange={handleChange}
-              rows={4}
+              rows={3}
               placeholder="Observações, próximos passos..."
               className={`${inputClass} resize-none`}
             />
           </div>
 
           {/* Actions */}
-          <div className="flex gap-2 pt-1">
+          <div className="flex flex-col sm:flex-row gap-2 pt-1">
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 bg-[#f97316] hover:bg-[#ea6c0a] active:bg-[#d96109] text-white py-2.5 rounded-lg font-medium text-sm transition-colors disabled:opacity-50"
+              className="flex-1 bg-[#f97316] hover:bg-[#ea6c0a] active:bg-[#d96109] text-white py-3 sm:py-2.5 rounded-lg font-medium text-sm transition-colors disabled:opacity-50 min-h-[44px] sm:min-h-auto flex items-center justify-center"
             >
               {saving
                 ? <span className="flex items-center justify-center gap-2">
@@ -224,7 +224,7 @@ export default function LeadModal({ lead, onSave, onClose, onDelete }) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-lg border border-[#1e1e1e] text-[#444] hover:text-white hover:border-[#2a2a2a] text-sm transition-all"
+              className="flex-1 sm:flex-none px-4 py-3 sm:py-2.5 rounded-lg border border-[#1e1e1e] text-[#444] hover:text-white hover:border-[#2a2a2a] text-sm transition-all min-h-[44px] sm:min-h-auto flex items-center justify-center"
             >
               Cancelar
             </button>

@@ -23,7 +23,7 @@ export default function DashboardMetrics({ leads }) {
   }, [leads])
 
   return (
-    <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
       <MetricCard
         label="Total de Leads"
         value={m.totalLeads}
@@ -58,21 +58,21 @@ export default function DashboardMetrics({ leads }) {
 
 function MetricCard({ label, value, type, color, icon }) {
   return (
-    <div className="bg-[#111] border border-[#1a1a1a] rounded-xl p-5 relative overflow-hidden">
+    <div className="bg-[#111] border border-[#1a1a1a] rounded-lg sm:rounded-xl p-3 sm:p-5 relative overflow-hidden">
       <div
         className="absolute -top-8 -right-8 w-28 h-28 rounded-full blur-2xl opacity-[0.07] pointer-events-none"
         style={{ backgroundColor: color }}
       />
       <div
-        className="w-8 h-8 rounded-lg flex items-center justify-center mb-4"
+        className="w-7 sm:w-8 h-7 sm:h-8 rounded-lg flex items-center justify-center mb-2 sm:mb-4"
         style={{ backgroundColor: `${color}18`, color }}
       >
         {icon}
       </div>
-      <div className="font-mono text-xl font-semibold text-white mb-1 leading-none">
+      <div className="font-mono text-lg sm:text-xl font-semibold text-white mb-0.5 sm:mb-1 leading-none">
         {type === 'number' ? value : value}
       </div>
-      <div className="font-mono text-[10px] uppercase tracking-[0.15em] text-[#3a3a3a] mt-2">
+      <div className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.15em] text-[#3a3a3a] mt-1 sm:mt-2">
         {label}
       </div>
     </div>
